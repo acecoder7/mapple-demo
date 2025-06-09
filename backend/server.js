@@ -172,7 +172,7 @@ function errorHandler(err, req, res, next) {
  */
 function handleOrderCreated(req, res) {
   console.log('🔔 [orders/create] Order Created event received:');
-  console.log(JSON.stringify(parseBody(req), null, 2));
+  // console.log(JSON.stringify(parseBody(req), null, 2));
   res.sendStatus(200);
 }
 
@@ -181,7 +181,7 @@ function handleOrderCreated(req, res) {
  */
 function handleOrderFulfilled(req, res) {
   console.log('✅ [orders/fulfilled] Order Fulfilled event received:');
-  console.log(JSON.stringify(parseBody(req), null, 2));
+  // console.log(JSON.stringify(parseBody(req), null, 2));
   res.sendStatus(200);
 }
 
@@ -190,7 +190,7 @@ function handleOrderFulfilled(req, res) {
  */
 function handleFulfillmentCreated(req, res) {
   console.log('📦 [fulfillments/create] Fulfillment Created event received:');
-  console.log(JSON.stringify(parseBody(req), null, 2));
+  // console.log(JSON.stringify(parseBody(req), null, 2));
   res.sendStatus(200);
 }
 
@@ -199,7 +199,7 @@ function handleFulfillmentCreated(req, res) {
  */
 function handleLocalDeliveryPrep(req, res) {
   console.log('🚚 [fulfillment_order/line_items_prepared_for_local_delivery] Local Delivery Prep event received:');
-  console.log(JSON.stringify(parseBody(req), null, 2));
+  // console.log(JSON.stringify(parseBody(req), null, 2));
   res.sendStatus(200);
 }
 
