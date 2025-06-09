@@ -1,20 +1,13 @@
-/**
- * server.js
- *
- * Express backend that:
- * 1) Fetches MapMyIndia OAuth token (client_credentials)
- * 2) Exposes:
- *    - GET /api/map/auto-suggest?query=<TEXT>
- *    - GET /api/map/geocode?address=<FORMATTED_ADDRESS>
- *    - (Optional) GET /api/map/reverse-geocode?lat=<LAT>&lng=<LNG>
- */
-
 require("dotenv").config();
 const express = require("express");
 const axios = require("axios");
+const bodyParser = require('body-parser');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+
+app.use(bodyParser.raw({ type: 'application/json' }));
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 0) Ensure env vars are set
@@ -172,6 +165,64 @@ app.get("/api/map/reverse-geocode", async (req, res, next) => {
     next(err);
   }
 });
+
+
+/**
+ * Handler for "orders/create" webhook
+ */
+function handleOrderCreated(req, res) {
+  console.log('🔔 [orders/create] Order Created event received:');
+  console.log(JSON.stringify(parseBody(req), null, 2));
+  res.sendStatus(200);
+}
+
+/**
+ * Handler for "orders/fulfilled" webhook
+ */
+function handleOrderFulfilled(req, res) {
+  console.log('✅ [orders/fulfilled] Order Fulfilled event received:');
+  console.log(JSON.stringify(parseBody(req), null, 2));
+  res.sendStatus(200);
+}
+
+/**
+ * Handler for "fulfillments/create" webhook
+ */
+function handleFulfillmentCreated(req, res) {
+  console.log('📦 [fulfillments/create] Fulfillment Created event received:');
+  console.log(JSON.stringify(parseBody(req), null, 2));
+  res.sendStatus(200);
+}
+
+/**
+ * Handler for "fulfillment_order/line_items_prepared_for_local_delivery" webhook
+ */
+function handleLocalDeliveryPrep(req, res) {
+  console.log('🚚 [fulfillment_order/line_items_prepared_for_local_delivery] Local Delivery Prep event received:');
+  console.log(JSON.stringify(parseBody(req), null, 2));
+  res.sendStatus(200);
+}
+
+/**
+ * Parse raw body into JSON safely
+ */
+function parseBody(req) {
+  try {
+    return JSON.parse(req.body.toString('utf8'));
+  } catch (error) {
+    console.error('Failed to parse JSON body:', error);
+    return {};
+  }
+}
+
+// Routes
+app.post('/webhooks/orders-create', handleOrderCreated);
+app.post('/webhooks/orders-fulfilled', handleOrderFulfilled);
+app.post('/webhooks/fulfillments-create', handleFulfillmentCreated);
+app.post(
+  '/webhooks/fulfillment_order/line_items_prepared_for_local_delivery',
+  handleLocalDeliveryPrep
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Root Health Check
